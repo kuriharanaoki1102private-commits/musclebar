@@ -850,10 +850,10 @@ function saveX(){var l=document.getElementById('xa-l');if(!l||!l.value.trim()){t
 function setActiveX(id){(S.xAccs||[]).forEach(function(a){a.active=a.id===id});sv();toast('使用中アカウントを変更しました','s');goSub('xacc')}
 function delX(id){if(!confirm('このアカウントを削除しますか？'))return;S.xAccs=(S.xAccs||[]).filter(function(a){return a.id!==id});sv();goSub('xacc')}
 function editX(id){var a=(S.xAccs||[]).find(function(a){return a.id===id});if(!a)return;var n=prompt('アカウント名：',a.label);if(!n)return;a.label=n.trim();sv();toast('更新しました','s');goSub('xacc')}
-function verifyX(id){toast('接続確認はVercelデプロイ後に有効になります','i')}
-function testXPost(id){toast('テスト投稿はVercelデプロイ後に有効になります','i')}
+function verifyX(id){var a=S.xAccs.find(a=>a.id===id);if(!a)return;testPostInternal('接続確認テスト投稿 '+new Date().toLocaleString());}
+function testXPost(id){var a=S.xAccs.find(a=>a.id===id);if(!a)return;testPostInternal('テスト投稿 '+new Date().toLocaleString());}
 
-// SCHEDULER
+async function testPostInternal(text){toast('投稿中...','i');try{const r=await fetch('/api/post',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});const d=await r.json();if(d.success)toast('投稿成功！ ID:'+d.tweetId,'s');else toast('エラー: '+d.error,'e');}catch(e){toast('通信エラー: '+e.message,'e');}} // SCHEDULER
 function startSched(){S.schedOn=true;sv();addLog('info','スケジューラ開始');toast('スケジューラを開始しました（Vercelデプロイ後に実際の投稿が有効）','s');goSub('sched')}
 function stopSched(){S.schedOn=false;sv();addLog('info','スケジューラ停止');toast('スケジューラを停止しました','i');goSub('sched')}
 function doTest(){
